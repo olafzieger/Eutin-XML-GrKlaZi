@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+	elementFormDefault="qualified">
+
+	<element name="fields">
+		<complexType>
+			<sequence>
+				<element name="fields" minOccurs="1" maxOccurs="unbounded">
+					<complexType>
+						<sequence>
+							<element name="Optionsfeld3" minOccurs="1" maxOccurs="1" />
+							<element name="anbieter" minOccurs="0" maxOccurs="1" />
+							<element name="berufsschule" minOccurs="0" maxOccurs="1" />
+							<element name="beschreibung" minOccurs="1" maxOccurs="1" />
+							<element name="besonderheit" minOccurs="1" maxOccurs="1" />
+							<element name="eins" minOccurs="1" maxOccurs="1" />
+							<element name="elf" minOccurs="1" maxOccurs="1" />
+							<element name="foerderschule" minOccurs="1" maxOccurs="1" />
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+</schema>
