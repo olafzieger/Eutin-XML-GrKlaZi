@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fields xmlns:xfdf="http://ns.adobe.com/xfdf-transition/">
+<fields xmlns:od="urn:schemas-microsoft-com:officedata"  xmlns:xfdf="http://ns.adobe.com/xfdf-transition/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="PDFschema.xsd">
 	<Optionsfeld3 xfdf:original="Optionsfeld 3">haende</Optionsfeld3>
 	<anbieter>Musterberanbieter</anbieter>
 	<berufsschule>Off</berufsschule>
