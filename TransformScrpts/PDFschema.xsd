@@ -18,6 +18,7 @@
 				<element name="internet" minOccurs="1" maxOccurs="1" />
 				<element name="kika" minOccurs="1" maxOccurs="1" />
 				<element name="lehrer" minOccurs="1" maxOccurs="1" />
+				<element name="nummer" minOccurs="1" maxOccurs="1" />
 				<element name="programm" minOccurs="1" maxOccurs="1" />
 				<element name="termine" minOccurs="1" maxOccurs="1" />
 			</sequence>
