@@ -7,3 +7,6 @@
 /.settings
 /target
 /_lokale-Tests
+/Bericht.out.xml
+/Bericht.xml
+/.gitignore
