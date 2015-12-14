@@ -7,8 +7,41 @@
 
 	<xsl:template match="Data">
 		<!-- TODO: Auto-generated template -->
-		<Data xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		<Data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xsi:noNamespaceSchemaLocation="PDFschema.xsd">
+            <xsl:comment>
+                <xsl:text>Leerer Eintrag für Musterseite</xsl:text>
+            </xsl:comment>
+            <xsl:element name="textabschnitt1">
+                <xsl:element name="anbieter"></xsl:element>
+                <xsl:element name="internet"></xsl:element>
+            </xsl:element>
+            <xsl:element name="programm"></xsl:element>
+            <xsl:element name="beschreibung">
+                <xsl:element name="beschreibungUeberschrift"></xsl:element>
+                <xsl:element name="beschreibungInhalt"></xsl:element>
+                <xsl:element name="beschreibungsUeberschrift"></xsl:element>
+                <xsl:element name="beschreibungLernziel"></xsl:element>
+            </xsl:element>
+            <xsl:element name="textabschnitt2">
+                <xsl:element name="hinweise"></xsl:element>
+                <xsl:element name="besonderheit"></xsl:element>
+                <xsl:element name="hinweise"></xsl:element>
+                <xsl:element name="termine"></xsl:element>
+            </xsl:element>
+            <xsl:element name="bild"></xsl:element>
+            <xsl:element name="elf"></xsl:element>
+            <xsl:element name="kika"></xsl:element>
+            <xsl:element name="berufsschule"></xsl:element>
+            <xsl:element name="forderschule"></xsl:element>
+            <xsl:element name="lehrer"></xsl:element>
+            <xsl:element name="eins"></xsl:element>
+            <xsl:element name="fuenf"></xsl:element>
+            <xsl:element name="nummer"></xsl:element>
+            <xsl:comment>
+                <xsl:text>E N D E Leerer Eintrag für Musterseite</xsl:text>
+            </xsl:comment>
+
 			<xsl:for-each select="fields">
 				<xsl:sort select="nummer"></xsl:sort>
 				<xsl:comment>
@@ -53,6 +86,7 @@
 						</xsl:element>
 						<xsl:element name="besonderheit">
 							<xsl:value-of select="besonderheit"></xsl:value-of>
+                            <xsl:text>&#xD;&#xD;</xsl:text>
 						</xsl:element>
 					</xsl:if>
 					<xsl:if test="termine !=''">
@@ -64,35 +98,66 @@
 						</xsl:element>
 					</xsl:if>
 				</xsl:element>
-				
+                <xsl:element name="bild">
+                    <xsl:attribute name="href">
+                        <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/PDF_XML_TEST%20Ordner/Links/Bild_</xsl:text>
+                        <xsl:value-of select="nummer"></xsl:value-of>
+                        <xsl:text>.JPG</xsl:text>
+                    </xsl:attribute>
+                </xsl:element>
+                <xsl:element name="elf">
+                    <xsl:if test="elf = 'Ja'">
+                        <xsl:attribute name="href">
+                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                        </xsl:attribute>
+                    </xsl:if>
+                </xsl:element>
+				<xsl:element name="kika">
+                    <xsl:if test="kika = 'Ja'">
+                        <xsl:attribute name="href">
+                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                        </xsl:attribute>
+                    </xsl:if>
+                </xsl:element>
+                <xsl:element name="berufsschule">
+                    <xsl:if test="berufsschule = 'Ja'">
+                        <xsl:attribute name="href">
+                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                        </xsl:attribute>
+                    </xsl:if>
+                </xsl:element>
+                <xsl:element name="forderschule">
+                    <xsl:if test="foerderschule = 'Ja'">
+                        <xsl:attribute name="href">
+                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                        </xsl:attribute>
+                    </xsl:if>
+                </xsl:element>
+                <xsl:element name="lehrer">
+                    <xsl:if test="lehrer = 'Ja'">
+                        <xsl:attribute name="href">
+                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                        </xsl:attribute>
+                    </xsl:if>
+                </xsl:element>
+                <xsl:element name="eins">
+                    <xsl:if test="eins = 'Ja'">
+                        <xsl:attribute name="href">
+                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                        </xsl:attribute>
+                    </xsl:if>
+                </xsl:element>
+                <xsl:element name="fuenf">
+                    <xsl:if test="fuenf = 'Ja'">
+                        <xsl:attribute name="href">
+                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                        </xsl:attribute>
+                    </xsl:if>
+                </xsl:element>
 				<xsl:element name="nummer">
 					<xsl:value-of select="nummer"></xsl:value-of>
 				</xsl:element>
 			</xsl:for-each>
-			
-
-			<!-- <xsl:element name="berufsschule">
-				<xsl:value-of select="berufsschule" />
-			</xsl:element>
-			<xsl:element name="eins">
-				<xsl:value-of select="eins" />
-			</xsl:element>
-			<xsl:element name="elf">
-				<xsl:value-of select="elf" />
-			</xsl:element>
-			<xsl:element name="foerderschule">
-				<xsl:value-of select="foerderschule" />
-			</xsl:element>
-			<xsl:element name="fuen">
-				<xsl:value-of select="fuenf" />
-			</xsl:element>
-			<xsl:element name="kika">
-				<xsl:value-of select="kika" />
-			</xsl:element>
-			<xsl:element name="lehrer">
-				<xsl:value-of select="lehrer" />
-			</xsl:element> -->
-			
 		</Data>
 	</xsl:template>
 </xsl:stylesheet>
