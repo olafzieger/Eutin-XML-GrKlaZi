@@ -21,85 +21,99 @@ switch(substr($displayMaxSize,-1))
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="css/bootstrap-theme.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- Bootstrap E N D E -->
     <style>
         progress {
             margin:10px 0 10px 0;
         }
-
-        .content {
-            margin-top:60px;
-        }
         body {
-            padding-left: 20px;
-        }
-        .fill {
-            padding-left: 20px;
+            /* Abstand oben wegen der festen Navbar */
+            padding-top: 40px;
         }
     </style>
     <title>XML-Bilder-Upload der Runze & Casper GmbH</title>
 </head>
 <body>
 
-<div class="topbar">
-    <div class="fill">
-        <div class="container">
-            <a class="brand" href="#">Runze & Casper GmbH</a>
-
-            <ul class="nav">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Menü ein/aus</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Runze & Casper GmbH</a>
+        </div>
+        <!-- Die Nav-Links, Formulare und andere Inhalte für das Umschalten zu sammeln -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
                 <li><a href="#">Hilfe/FAQ</a></li>
                 <li><a href="#">Kontakt zum Support</a></li>
             </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <header class="page-header">
+        <h1>XML-Bilder-Upload</h1>
+    </header>
 
+    <div class="row">
+        <div class="col-xs-12 col-md-8">
+
+            <h2>Upload</h2>
+            <p>Select one file to upload (Max total size <?=$displayMaxSize;?>)</p>
+            <form action="upload.php" method="POST" enctype="multipart/form-data" id="upload" class="form-horizontal">
+                <input type="hidden" name="<?php echo ini_get("session.upload_progress.name"); ?>" value="upload" />
+
+                <label for="files" class="col-sm-3 control-label">Bildatei für Ihren Eintrag</label>
+
+                <div class="col-sm-9">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <input type="submit" class="btn btn-primary" value="Upload"/>
+                        </span>
+                        <input class="form-control" placeholder="test" type="file" name="files[]" id="files" multiple/>
+                    </div>
+                </div>
+
+
+            </form>
+
+            <h2>Progress</h2>
+            <progress max="1" value="0" id="progress"></progress>
+            <p id="error" style="color: red;"></p>
+            <p id="progress-txt"></p>
+            <p id="uploadCallback"></p>
+            <ul id="fileslist"></ul>
         </div>
     </div>
 </div>
-<article class="container">
-    <div class="content">
-        <header class="page-header">
-            <h1>XML-Bilder-Upload</h1>
-        </header>
-
-        <div class="row">
-            <div class="span8">
-
-                <h2>Upload</h2>
-                <p>Select one file to upload (Max total size <?=$displayMaxSize;?>)</p>
-                <form action="upload.php" method="POST" enctype="multipart/form-data" id="upload" >
-                    <input type="hidden" name="<?php echo ini_get("session.upload_progress.name"); ?>" value="upload" />
-
-
-                    <div class="clearfix">
-                        <label for="files">Bildatei für Ihren Eintrag</label>
-                        <div class="input">
-                            <input type="file" name="files[]" id="files" multiple style="width: 410px !important;" />
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <input type="submit" class="btn primary" value="Upload"/>
-                    </div>
-                </form>
-
-                <h2>Progress</h2>
-                <progress max="1" value="0" id="progress"></progress>
-                <p id="error" style="color: red;"></p>
-                <p id="progress-txt"></p>
-                <p id="uploadCallback"></p>
-                <ul id="fileslist"></ul>
-            </div>
-        </div>
-    </div>
-</article>
 
 
 
 
 <!-- File containing Jquery and the Jquery form plugin-->
-<script src="jquery.js"></script>
-<script src="jquery.form.js"></script>
+<script src="js/jquery-1.11.3.min.js"></script>
+<script src="js/jquery.form.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
 <script>
 
     // Holds the id from set interval
