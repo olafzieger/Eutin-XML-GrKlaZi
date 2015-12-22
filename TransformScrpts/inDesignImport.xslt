@@ -99,58 +99,63 @@
 					</xsl:if>
 				</xsl:element>
                 <xsl:element name="bild">
-                    <xsl:attribute name="href">
-                        <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/PDF_XML_TEST%20Ordner/Links/Bild_</xsl:text>
+                    <xsl:variable name="hrefjpg">
+                        <xsl:text>file:///Volumes/pdf_xml_bilder/Bild_</xsl:text>
                         <xsl:value-of select="nummer"></xsl:value-of>
-                        <xsl:text>.JPG</xsl:text>
-                    </xsl:attribute>
+                        <xsl:text>.jpg</xsl:text>
+                    </xsl:variable>
+                    <xsl:if test="doc-available($hrefjpg)">
+                        <xsl:attribute name="href">
+                            <xsl:value-of select="$hrefjpg"></xsl:value-of>
+                        </xsl:attribute>
+                    </xsl:if>
                 </xsl:element>
                 <xsl:element name="elf">
                     <xsl:if test="elf = 'Ja'">
                         <xsl:attribute name="href">
-                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                            <xsl:text>file:///Volumes/pdf_xml_bilder/Zielgruppe.psd</xsl:text>
                         </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
 				<xsl:element name="kika">
                     <xsl:if test="kika = 'Ja'">
                         <xsl:attribute name="href">
-                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                            <xsl:text>file:///Volumes/pdf_xml_bilder/Zielgruppe.psd</xsl:text>
                         </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
                 <xsl:element name="berufsschule">
                     <xsl:if test="berufsschule = 'Ja'">
                         <xsl:attribute name="href">
-                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                            <xsl:text>file:///Volumes/pdf_xml_bilder/Zielgruppe.psd</xsl:text>
                         </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
                 <xsl:element name="forderschule">
                     <xsl:if test="foerderschule = 'Ja'">
                         <xsl:attribute name="href">
-                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                            <xsl:text>file:///Volumes/pdf_xml_bilder/Zielgruppe.psd</xsl:text>
                         </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
                 <xsl:element name="lehrer">
                     <xsl:if test="lehrer = 'Ja'">
                         <xsl:attribute name="href">
-                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                            <xsl:text>file:///Volumes/pdf_xml_bilder/Zielgruppe.psd</xsl:text>
                         </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
                 <xsl:element name="eins">
                     <xsl:if test="eins = 'Ja'">
                         <xsl:attribute name="href">
-                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                            <xsl:text>file:///Volumes/pdf_xml_bilder/Zielgruppe.psd</xsl:text>
                         </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
                 <xsl:element name="fuenf">
                     <xsl:if test="fuenf = 'Ja'">
                         <xsl:attribute name="href">
-                            <xsl:text>file:///Users/olaf/git/Eutin-XML-GrKlaZi/Eutin-XML-Eintrag-Gruenes-Klassenzimmer/Bilder/Zielgruppe.psd</xsl:text>
+                            <xsl:text>file:///Volumes/pdf_xml_bilder/Zielgruppe.psd</xsl:text>
                         </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
