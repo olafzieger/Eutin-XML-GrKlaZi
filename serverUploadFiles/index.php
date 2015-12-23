@@ -206,7 +206,7 @@ switch(substr($displayMaxSize,-1))
                 $.getJSON('progress.php', function(data){
 
                     //if there is some progress then update the status
-                    if(data)
+                    if(!data.fertig)
                     {
                         $('#progress').val(data.bytes_processed / data.content_length);
                         $('#progress-txt').html('Uploading '+ Math.round((data.bytes_processed / data.content_length) * 100) + '% ')
@@ -219,13 +219,14 @@ switch(substr($displayMaxSize,-1))
                         }
                         $('#fileslist').html(filelist);
 
-                    } else {
+                    }
 
+                    if(data.fertig) {
                         // When there is no data the upload is complete
                         $('#progress').val('1');
-                        /* TODO: folgende Meldung sollte von upload.php kommen, 'no data' bedeutet nicht zwingend das alles ok ist. */
+                        /* TODO: folgende Meldung sollte von upload.php kommen, 'no data' bzw. '!data.fertig' bedeutet nicht zwingend das alles ok ist. */
                         if($('#error').html() == ''){
-                            $('#progress-txt').html('Alle Daten erfolgreich hochgeladen.');
+                            $('#progress-txt').html('Alle Daten erfolgreich hochgeladen.'+prozessDurchlauf);
                         }
                         $('.preloader').replaceWith('<span class="okay" style="font-size: 140%; color: green;"> ✓</span>');
                         stopProgress();
