@@ -224,7 +224,7 @@ switch(substr($displayMaxSize,-1))
                     if(data.fertig) {
                         // When there is no data the upload is complete
                         $('#progress').val('1');
-                        /* TODO: folgende Meldung sollte von upload.php kommen, 'no data' bzw. '!data.fertig' bedeutet nicht zwingend das alles ok ist. */
+                        /* TODO: folgende Meldung sollte von upload.php kommen, 'no data' bzw. '!data.fertig' bedeutet nicht zwingend das alles ok ist. Test */
                         if($('#error').html() == ''){
                             $('#progress-txt').html('Alle Daten erfolgreich hochgeladen.'+prozessDurchlauf);
                         }
