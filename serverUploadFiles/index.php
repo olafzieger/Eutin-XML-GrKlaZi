@@ -2,8 +2,11 @@
 session_start();
 /* Die vom Server zugelassene Größe der uploadbaren
  * Dateimenge geben lassen.
+ * Und die Menge der zugelassenen Dateien für einen
+ * Upload geben lassen (max_file_uploads).
  * */
 $displayMaxSize = ini_get('post_max_size');
+$displayMaxFileUploads = ini_get('max_file_uploads');
 
 /* Ersetzung durch eine übliche Einheitsangabe. */
 switch(substr($displayMaxSize,-1))
@@ -79,28 +82,41 @@ switch(substr($displayMaxSize,-1))
 
             <h2>Upload</h2>
             <p>Select one file to upload (Max total size <?=$displayMaxSize;?>)</p>
+            <p>Bitte nur Maximal <?=$displayMaxFileUploads;?> Dateien auswählen.</p>
             <form action="upload.php" method="POST" enctype="multipart/form-data" id="upload" class="form-horizontal">
                 <input type="hidden" name="<?php echo ini_get("session.upload_progress.name"); ?>" value="upload" />
 
-                <label for="files" class="col-sm-3 control-label">Bildatei für Ihren Eintrag</label>
+                <div class="form-group">
+                    <label for="files" class="col-sm-3 control-label">Bildatei für Ihren Eintrag</label>
 
-                <div class="col-sm-9">
-                    <div class="input-group">
-                        <span class="input-group-btn">
-                            <input type="submit" class="btn btn-primary" value="Upload"/>
-                        </span>
-                        <input class="form-control" placeholder="test" type="file" name="files[]" id="files" multiple/>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <input id="submit" type="submit" class="btn btn-primary" value="Upload"/>
+                            </span>
+                            <input class="form-control" placeholder="test" type="file" name="files[]" id="files" multiple/>
+                        </div>
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="progress" class="col-sm-3 control-label">Fortschritt</label>
+
+                    <div class="col-sm-9">
+
+                            <div class="progress">
+                                <div class="progress-bar" id="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+
+                    </div>
+                </div>
 
             </form>
 
-            <h2>Progress</h2>
-            <progress max="1" value="0" id="progress"></progress>
             <p id="error" style="color: red;"></p>
             <p id="progress-txt"></p>
-            <p id="uploadCallback"></p>
+            <p id="uploadCallback" class="hide"></p>
             <ul id="fileslist"></ul>
         </div>
     </div>
@@ -118,6 +134,7 @@ switch(substr($displayMaxSize,-1))
 
     // Holds the id from set interval
     var interval_id = 0;
+    var uploadCallback = '';
 
     $(document).ready(function(){
 
@@ -178,23 +195,26 @@ switch(substr($displayMaxSize,-1))
                 /* Response der upload.php (JSON) auswerten
                  * und prüfen ob alles hochgeladen wurde.
                  * ggf. entsprechende Fehlermeldung ausgeben.
-                 * */
+                 * ****************************************** */
                 if(data){
                     for(var i = 0; i < data.files.length; i++){
 
                         $('#uploadCallback').html(data.files +' data.files');
                     }
+                    uploadCallback = 'okay';
                     if(data.uploadError != ''){
                         $('#error').html(data.uploadError+' data.uploadError')
                             .prepend('<em><span style="font-size: 140%;">✘ </span>Folgender Fehler ist aufgetreten:<br></em>');
-                        $('#progress').val('0');
+                        $('#progress').width('0%');
+                        $('#progress').html('');
                         stopProgress();
                         $('#progress-txt').remove();
                     }
                     if(data.moveError != ''){
                         $('#error').html(data.moveError+' data.moveError')
                             .prepend('<em><span style="font-size: 140%;">✘ </span>Folgender Fehler ist aufgetreten:<br></em>');
-                        $('#progress').val('0');
+                        $('#progress').width('0%');
+                        $('#progress').html('');
                         stopProgress();
                         $('#progress-txt').remove();
                     }
@@ -206,11 +226,12 @@ switch(substr($displayMaxSize,-1))
                 $.getJSON('progress.php', function(data){
 
                     //if there is some progress then update the status
-                    if(!data.fertig)
+                    if(!data.noProgress)
                     {
-                        $('#progress').val(data.bytes_processed / data.content_length);
-                        $('#progress-txt').html('Uploading '+ Math.round((data.bytes_processed / data.content_length) * 100) + '% ')
-                            .append(extround((data.content_length/1024/1024), 100) + ' MB');
+                        $('#submit').attr('disabled', true);
+                        $('#progress').width((data.bytes_processed / data.content_length) * 100 + '%');
+                        $('#progress').html(Math.round((data.bytes_processed / data.content_length) * 100) + '% ');
+                        $('#progress-txt').html(extround((data.bytes_processed/1024/1024), 100) + ' MB bereits hochgeladen');
                         var filelist = "";
                         for(var i = 0; i < data.files.length; i++) {
                             var done = ' <img class="preloader" src="preloader.gif" style="margin-bottom: -3px" />';
@@ -221,14 +242,19 @@ switch(substr($displayMaxSize,-1))
 
                     }
 
-                    if(data.fertig) {
-                        // When there is no data the upload is complete
-                        $('#progress').val('1');
-                        /* TODO: folgende Meldung sollte von upload.php kommen, 'no data' bzw. '!data.fertig' bedeutet nicht zwingend das alles ok ist. Test */
-                        if($('#error').html() == ''){
-                            $('#progress-txt').html('Alle Daten erfolgreich hochgeladen.'+prozessDurchlauf);
+                    //if noProgress then this part
+                    if(data.noProgress) {
+                        /* Wenn von der upload.php kein moveError, uploadError in #error
+                         * ausgegeben wird und von upload.php der uploadCallback okay ist
+                         * wird eine Erfolgsmeldung ausgegeben.
+                         * ************************************ */
+                        if($('#error').html() == '' && uploadCallback == 'okay'){
+                            $('#progress').width('100%');
+                            $('#progress').html('100%');
+                            $('#progress-txt').html('Alle Daten erfolgreich hochgeladen.');
+                            $('.preloader').replaceWith('<span class="okay" style="font-size: 140%; color: green;"> ✓</span>');
                         }
-                        $('.preloader').replaceWith('<span class="okay" style="font-size: 140%; color: green;"> ✓</span>');
+                        $('#submit').attr('disabled', false);
                         stopProgress();
                     }
                 }).fail(function(jqxhr, textStatus, error){
@@ -236,7 +262,7 @@ switch(substr($displayMaxSize,-1))
                     var msg = 'Leider ist folgender Fehler (#progr42) aufgetreten. "';
                     $('#error').html(msg + textStatus + ': ' + error +'"')
                         .prepend('<span style="font-size: 140%;">✘ </span>Es ist ein schwerer Systemfehler aufgetreten.<br>');
-                    $('#progress').val('1');
+                    $('#progress').width('0%');
                     $('.okay').replaceWith('<span style="font-size: 140%; color: red;"> ✘</span>');
                     stopProgress();
                 });

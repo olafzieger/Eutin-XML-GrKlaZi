@@ -3,8 +3,11 @@ session_start();
 header('Content-type: application/json');
 /* Die vom Server zugelassene Größe der uploadbaren
  * Dateimenge geben lassen.
+ * Und die Menge der zugelassenen Dateien für einen
+ * Upload geben lassen (max_file_uploads).
  * */
 $displayMaxSize = ini_get('post_max_size');
+$displayMaxFileUploads = ini_get('max_file_uploads');
 
 /* Ersetzung durch eine übliche Einheitsangabe. */
 switch(substr($displayMaxSize,-1))
@@ -62,10 +65,16 @@ if(isset($_FILES['files'])) {
              * es an dieser Stelle im Arry $uploadedFiles notiert.
              * Ansonsten wird im Elsezweig die entsprechende Fehler-
              * meldung gespeichert und der index.php übergeben.
-             * */
+             * ************************************************ */
             $uploadedFiles['files'][$i] = $name_array[$i] . ' '
                 . round(($size_array[$i]/1024/1024), 2) . ' MB, '
                 . $uploadMeldung[$error_array[$i]];
+            if($i == ($displayMaxFileUploads)) {
+                $uploadedFiles['uploadError'] = 'Sie haben zu viele'
+                                              . ' Dateien ausgewählt, es konnten leider nur'
+                                              . ' die zulässigen ' . $displayMaxFileUploads
+                                              . ' Dateien hochgeladen werden.';
+            }
         } else {
             /* Gibt den Grund als Fehlermeldungaus weshalb diese
              * Datei nicht auf dem Server gespeichert werden konnte
@@ -81,8 +90,6 @@ if(isset($_FILES['files'])) {
         }
     }
     /* Übergabe der Meldungen zum Upload. */
-    /*echo $uploadedFiles . ' Halali …';*/
-    /*print_r($uploadedFiles);*/
     echo json_encode($uploadedFiles);
 }
 
