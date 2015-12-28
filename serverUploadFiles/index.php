@@ -232,6 +232,8 @@ switch(substr($displayMaxSize,-1))
                         $('#progress').width((data.bytes_processed / data.content_length) * 100 + '%');
                         $('#progress').html(Math.round((data.bytes_processed / data.content_length) * 100) + '% ');
                         $('#progress-txt').html(extround((data.bytes_processed/1024/1024), 100) + ' MB bereits hochgeladen');
+                        /* TODO: #fileList nicht komplett ersetzen sondern nach Dateinamen mittels .html()
+                         * durchgehen und nacheinader abhacken.  */
                         var filelist = "";
                         for(var i = 0; i < data.files.length; i++) {
                             var done = ' <img class="preloader" src="preloader.gif" style="margin-bottom: -3px" />';
