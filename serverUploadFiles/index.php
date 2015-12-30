@@ -154,7 +154,8 @@ switch(substr($displayMaxSize,-1))
             var fileListSize = 0;
             var selectedfiles = $('#files')[0].files;
             for(var f = 0; f < selectedfiles.length; f++) {
-                selectedFileList += '<li>' + selectedfiles[f].name + ' ' + extround((selectedfiles[f].size/1024/1024), 100) + ' MB</li>';
+                selectedFileList += '<li id="' + f + '">' + selectedfiles[f].name + ' '
+                                 + '<span class="preloader">' + extround((selectedfiles[f].size/1024/1024), 100) + ' MB</span></li>';
 
                 fileListSize += selectedfiles[f].size;
             }
@@ -232,15 +233,18 @@ switch(substr($displayMaxSize,-1))
                         $('#progress').width((data.bytes_processed / data.content_length) * 100 + '%');
                         $('#progress').html(Math.round((data.bytes_processed / data.content_length) * 100) + '% ');
                         $('#progress-txt').html(extround((data.bytes_processed/1024/1024), 100) + ' MB bereits hochgeladen');
-                        /* TODO: #fileList nicht komplett ersetzen sondern nach Dateinamen mittels .html()
-                         * durchgehen und nacheinader abhacken. */
-                        var filelist = "";
+
+                        var done = "";
                         for(var i = 0; i < data.files.length; i++) {
-                            var done = ' <img class="preloader" src="preloader.gif" style="margin-bottom: -3px" />';
-                            if(data.files[i]['done']) {done = '<span class="okay" style="font-size: 140%; color: green;"> ✓</span>'}
-                            filelist += '<li>' + data.files[i]['name'] +  done + '</li>';
+
+                            done = ' <img class="preloader" src="preloader.gif" style="margin-bottom: -3px" />';
+                            /* Wenn data.files[i]['done'] true ist der Upload in das temporäre Verzeichnis
+                             * des Webservers fertig und kann als okay markiert werden. */
+                            if(data.files[i]['done']) {
+                                done = '<span class="okay" style="font-size: 140%; color: green;"> ✓</span>'
+                            }
+                            $('#'+i).html(data.files[i]['name'] +  done);
                         }
-                        $('#fileslist').html(filelist);
 
                     }
 
