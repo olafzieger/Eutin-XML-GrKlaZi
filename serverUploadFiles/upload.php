@@ -66,15 +66,12 @@ if(isset($_FILES['files'])) {
              * Ansonsten wird im Elsezweig die entsprechende Fehler-
              * meldung gespeichert und der index.php übergeben.
              * ************************************************ */
-            $uploadedFiles['files'][$i] = $name_array[$i] . ' '
-                . round(($size_array[$i]/1024/1024), 2) . ' MB, '
-                . $uploadMeldung[$error_array[$i]];
-            if($i == ($displayMaxFileUploads)) {
-                $uploadedFiles['uploadError'] = 'Sie haben zu viele'
-                                              . ' Dateien ausgewählt, es konnten leider nur'
-                                              . ' die zulässigen ' . $displayMaxFileUploads
-                                              . ' Dateien hochgeladen werden.';
-            }
+            $uploadedFiles['files'][$i]['fileName']     = $name_array[$i];
+            $uploadedFiles['files'][$i]['fileTmpName']  = $tmp_name_array[$i];
+            $uploadedFiles['files'][$i]['fileType']     = $type_array[$i];
+            $uploadedFiles['files'][$i]['fileSize']     = $size_array[$i];
+            $uploadedFiles['files'][$i]['fileStatus']   = $uploadMeldung[$error_array[$i]];
+
         } else {
             /* Gibt den Grund als Fehlermeldungaus weshalb diese
              * Datei nicht auf dem Server gespeichert werden konnte
