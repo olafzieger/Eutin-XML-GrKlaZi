@@ -167,6 +167,7 @@ switch(substr($displayMaxSize,-1))
     // Holds the id from set interval
     var interval_id = 0;
     var uploadCallback = '';
+    var progressRepeats = 0;
     var displayMaxFileUploads = <?=$displayMaxFileUploads;?>;
 
     $(document).ready(function(){
@@ -174,44 +175,46 @@ switch(substr($displayMaxSize,-1))
         $('[data-toggle="tooltip"]').tooltip();
 
         $('#files').change(function(){
-            if($(this).val() == ''){
-                /* Prüfen ob Daten vom Benutzer ausgewählt worden sind. */
-                $('#error').html('<span style="font-size: 140%;">✘ </span>Bitte wählen Sie Daten von Ihrem Rechner aus die hochgeladen werden sollen.')
-            } else {
-                /* Wenn dann die Daten vom Benutzer ausgewählt wurden
+            if($(this).val() != ''){
+                /* Prüfen ob Daten vom Benutzer ausgewählt worden sind.
+                 * Wenn dann die Daten vom Benutzer ausgewählt wurden
                  * Fehlermeldung wieder leeren. Und eine Liste der Auswahl
                  * ausgeben.
                  * */
                 $('#error').html('').removeClass();
-            }
 
-            var selectedFileList = '';
-            var fileListSize = 0;
-            var selectedfiles = $('#files')[0].files;
-            for(var f = 0; f < selectedfiles.length; f++) {
-                selectedFileList    += '<tr id="' + f + '">'
-                                        +'<td class="text-left status">' +
-                                            '<span class="glyphicon glyphicon-cloud-upload text-info" aria-hidden="true"></span>'
-                                        +'</td>'
-                                        +'<td class="text-right filesize">' +
-                                             extround((selectedfiles[f].size/1024/1024), 100) + '&nbsp;MB'
-                                        +'</td>'
-                                        +'<td>' +
-                                            '<span class="glyphicon glyphicon-file" aria-hidden="true"></span>' +
-                                            '&nbsp;' + selectedfiles[f].name
-                                        +'</td>'
-                                    +'</tr>';
+                var selectedFileList = '';
+                var fileListSize = 0;
+                var selectedfiles = $('#files')[0].files;
+                for(var f = 0; f < selectedfiles.length; f++) {
+                    selectedFileList    += '<tr id="' + f + '">'
+                                            +'<td class="text-left status">' +
+                                                '<span class="glyphicon glyphicon-cloud-upload text-info" aria-hidden="true"></span>'
+                                            +'</td>'
+                                            +'<td class="text-right filesize">' +
+                                                 extround((selectedfiles[f].size/1024/1024), 100) + '&nbsp;MB'
+                                            +'</td>'
+                                            +'<td>' +
+                                                '<span class="glyphicon glyphicon-file" aria-hidden="true"></span>' +
+                                                '&nbsp;' + selectedfiles[f].name
+                                            +'</td>'
+                                        +'</tr>';
 
-                fileListSize += selectedfiles[f].size;
+                    fileListSize += selectedfiles[f].size;
+                }
+                $('#fileslist').html(selectedFileList).parent().addClass('table-responsive');
+                $('#progress-txt').html('Die von Ihnen agewählten Dateien haben gesamt ' + extround((fileListSize/1024/1024), 100) + ' MB.' +
+                                        ' Klicken Sie auf Upload um den Prozess zu starten oder ändern Sie Ihre Auswahl.')
+                                  .removeClass().addClass('alert alert-info');
             }
-            $('#fileslist').html(selectedFileList).parent().addClass('table-responsive');
-            $('#progress-txt').html('Die von Ihnen agewählten Dateien haben gesamt ' + extround((fileListSize/1024/1024), 100) + ' MB.' +
-                                    ' Klicken Sie auf Upload um den Prozess zu starten oder ändern Sie Ihre Auswahl.')
-                              .removeClass().addClass('alert alert-info');
+            progressRepeats = 0;
+
         });
 
         // Add the submit handler to the form
         $('#upload').submit(function(){
+
+            $('#submit').attr('disabled', true);
 
             $('#upload').ajaxSubmit({
                 // Optionen für den jQuery-Ajax-Commit:
@@ -221,11 +224,11 @@ switch(substr($displayMaxSize,-1))
                 resetForm:      true,
                 error:          $('#progress-txt').load('upload.php', function(response, status, xhr) {
                     if(status == 'error') {
-                        var msg = 'Leider ist folgender Fehler (#upload42) aufgetreten: <span class="glyphicon glyphicon-alert"></span> ';
+                        var msg = '<span class="glyphicon glyphicon-alert"></span> Leider ist folgender Fehler (#upload42) aufgetreten:  ';
 
                         $('#progress-txt').html(msg + '<strong>' + xhr.status + ' - ' + xhr.statusText + '</strong>')
                                           .removeClass().addClass('alert alert-danger');
-                        $('#fileslist').remove();
+                        $('#fileslist').html('').parent().removeClass();
                     }
                 })
             });
@@ -233,7 +236,9 @@ switch(substr($displayMaxSize,-1))
             function beforeSubmit() {
                 /* Prüfen ob Daten vom Benutzer ausgewählt worden sind. */
                 if ($('#files').val() == '') {
-                    $('#error').html('<span class="glyphicon glyphicon-alert"></span> Bitte wählen Sie Daten von Ihrem Rechner aus die hochgeladen werden sollen.').removeClass().addClass('alert alert-danger');
+                    $('#error').html('<span class="glyphicon glyphicon-alert"></span> Bitte wählen Sie Daten von Ihrem Rechner aus die hochgeladen werden sollen.')
+                               .removeClass().addClass('alert alert-danger');
+                    $('#progress-txt').removeClass();
 
                     return false;
                 }
@@ -244,7 +249,7 @@ switch(substr($displayMaxSize,-1))
                  * und prüfen ob alles hochgeladen wurde.
                  * ggf. entsprechende Fehlermeldung ausgeben.  <span class="glyphicon glyphicon-info-sign text-danger" aria-hidden="true"></span>
                  * ****************************************** */
-                if(data){
+                if(data && $('#error').html() == ''){
                     for(var i = 0; i < data.files.length; i++){
                         $('#'+i+' .status').append(' <span class="glyphicon glyphicon-info-sign text-info" data-toggle="tooltip" title="" aria-hidden="true"></span>');
                         $('#'+i+' .status .glyphicon-info-sign').attr('title', data.files[i]['fileStatus']);
@@ -257,19 +262,21 @@ switch(substr($displayMaxSize,-1))
                      * das progress-script ohne Erfolgsmeldung abgebrochen */
                     if(data.uploadError != ''){
                         $('#error').html(data.uploadError)
-                            .prepend('<em><span style="font-size: 140%;">✘ </span>Folgender Fehler ist aufgetreten:<br></em>');
+                                   .prepend('<span class="glyphicon glyphicon-alert"></span> Folgender Fehler ist aufgetreten: ')
+                                   .removeClass().addClass('alert alert-danger');
                         $('#progress').width('0%');
                         $('#progress').html('');
                         stopProgress();
-                        $('#fileslist').remove();
-                        $('#progress-txt').remove();
+                        $('#fileslist').html('').parent().removeClass();
+                        $('#progress-txt').html('').removeClass();
                     }
                     if(data.moveError != ''){
                         $('#error').html(data.moveError)
-                            .prepend('<em><span style="font-size: 140%;">✘ </span>Folgender Fehler ist aufgetreten:<br></em>');
+                                   .prepend('<span class="glyphicon glyphicon-alert"></span> Folgender Fehler ist aufgetreten: ')
+                                   .removeClass().addClass('alert alert-danger');
                         stopProgress();
-                        $('#fileslist').remove();
-                        $('#progress-txt').remove();
+                        $('#fileslist').html('').parent().removeClass();
+                        $('#progress-txt').html('').removeClass();
                     }
                 }
             }
@@ -278,32 +285,38 @@ switch(substr($displayMaxSize,-1))
             interval_id = setInterval(function() {
                 $.getJSON('progress.php', function(data){
 
+                    progressRepeats++;
+
                     //if there is some progress then update the status
-                    if(!data.noProgress)
+                    if(data && !data.noProgress)
                     {
-                        $('#submit').attr('disabled', true);
                         $('#progress').width((data.bytes_processed / data.content_length) * 100 + '%');
                         $('#progress').html(Math.round((data.bytes_processed / data.content_length) * 100) + '% ');
-                        $('#progress-txt').html(extround((data.bytes_processed/1024/1024), 100) + ' MB bereits hochgeladen');
+
+                        if(progressRepeats < 2){
+                            $('#progress-txt').html('<strong>Bitte warten!</strong> Es sind <strong id="bytesLoaded"></strong> bereits hochgeladen.')
+                                              .removeClass().addClass('alert alert-warning')
+                                              .prepend('<span class="glyphicon glyphicon-repeat glyphicon-spin"></span> ');
+                        } else {
+                            $('#bytesLoaded').html(extround((data.bytes_processed/1024/1024), 100) + ' MB');
+                        }
 
                         var done = "";
                         for(var i = 0; i < data.files.length; i++) {
 
-                            $('#'+i+' .status span:first-child').removeClass('glyphicon-cloud-upload text-info')
-                                                                .addClass('glyphicon-repeat glyphicon-spin text-warning');
+                            $('#'+i+' .status span:first-child').removeClass().addClass('glyphicon glyphicon-repeat glyphicon-spin text-warning');
                             /* Wenn data.files[i]['done'] true ist der Upload in das temporäre Verzeichnis
                              * des Webservers fertig und kann als okay markiert werden.
                              * */
                             if(data.files[i]['done']) {
-                                $('#'+i+' .status span:first-child').removeClass('glyphicon-repeat glyphicon-spin text-warning')
-                                                                    .addClass('glyphicon-saved text-success');
+                                $('#'+i+' .status span:first-child').removeClass().addClass('glyphicon glyphicon-saved text-success');
                             }
                         }
 
                     }
 
                     //if noProgress then this part
-                    if(data.noProgress) {
+                    if(data && data.noProgress) {
                         /* Wenn von der upload.php kein moveError, uploadError in #error
                          * ausgegeben wird und von upload.php der uploadCallback okay ist
                          * wird eine Erfolgsmeldung ausgegeben.
@@ -318,34 +331,48 @@ switch(substr($displayMaxSize,-1))
                                                         ' zulässigen ' + displayMaxFileUploads + ' Dateien' +
                                                         ' hochgeladen werden. Die übrigen Dateien' +
                                                         ' wurden ignoriert und mit <span class="glyphicon glyphicon-alert text-danger"></span>' +
-                                                        ' markiert.');
+                                                        ' markiert.')
+                                                  .prepend('<span class="glyphicon glyphicon-alert"></span> ')
+                                                  .removeClass().addClass('alert alert-danger');
+
                                 var restFiles   = $('table#fileslist tr').length - displayMaxFileUploads;
                                 var fileID      = displayMaxFileUploads;
                                 for(restFiles > -1; restFiles--;){
                                     $('#'+fileID+' .status span').replaceWith('<span class="glyphicon glyphicon-alert text-danger" ' +
                                                                               'data-toggle="tooltip" title="Diese Datei konnte nicht ' +
                                                                               'hochgeladen werden. Es wurden mehr Dateien als zulässig ' +
-                                                                              'ausgewählt"></span>')
+                                                                              'ausgewählt"></span>');
                                     fileID++;
                                 }
                                 $('[data-toggle="tooltip"]').tooltip();
                             } else {
-                                $('#progress-txt').html('Alle Daten erfolgreich hochgeladen.');
+                                $('#progress-txt').html('Alle Daten erfolgreich hochgeladen.')
+                                                  .removeClass().addClass('alert alert-success')
+                                                  .prepend('<span class="glyphicon glyphicon-saved"></span> ');
                             }
                             $('.status span:first-child').removeClass('glyphicon-repeat glyphicon-spin text-warning')
                                                          .removeClass('glyphicon-cloud-upload text-info')
                                                          .addClass('glyphicon-saved text-success');
+                            $('#submit').attr('disabled', false);
+                        } else {
+                            if($('#files').val() != ''){
+
+                                $('#progress-txt').html('<span class="glyphicon glyphicon-repeat glyphicon-spin"></span> Bitte warten! ' +
+                                                        '<span class="glyphicon glyphicon-alert"></span> Es ist ein Fehler aufgetreten.')
+                                                  .removeClass().addClass('alert alert-danger');
+                            }
                         }
-                        $('#submit').attr('disabled', false);
                         stopProgress();
                     }
                 }).fail(function(jqxhr, textStatus, error){
 
-                    var msg = 'Leider ist folgender Fehler (#progress42) aufgetreten: '+ textStatus + ', ' + error;
+                    var msg = 'Leider ist folgender Fehler (#progress42) aufgetreten: <strong>'+ textStatus + ', ' + error + '</strong>';
                     $('#error').html(msg)
-                               .prepend('<span style="font-size: 140%;">✘ </span>Es ist ein schwerer Systemfehler aufgetreten.<br>');
+                               .prepend('<span class="glyphicon glyphicon-alert"></span> Es ist ein schwerer Systemfehler aufgetreten.<br>')
+                               .addClass('alert alert-danger');
                     $('#progress').width('0%');
                     $('.status span').replaceWith('<span class="glyphicon glyphicon-alert text-danger" data-toggle="tooltip" title="'+msg+'"></span>');
+                    $('#progress-txt').removeClass();
                     stopProgress();
                 });
 
@@ -361,6 +388,7 @@ switch(substr($displayMaxSize,-1))
         clearInterval(interval_id);
         $('#progress').width('0%');
         $('#progress').html('');
+        $('#submit').attr('disabled', false);
     }
 
     function extround(zahl,n_stelle) {
