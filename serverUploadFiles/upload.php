@@ -66,6 +66,11 @@ if(isset($_FILES['files'])) {
              * Ansonsten wird im Elsezweig die entsprechende Fehler-
              * meldung gespeichert und der index.php übergeben.
              * ************************************************ */
+
+            /* TODO: erlaubte Dateitypen für InDesign mitels ($type_array) abfragen und
+             * in $uploadedFiles['files'][$i]['fileStatus'] als Fehler ausgeben.
+             * */
+
             $uploadedFiles['files'][$i]['fileName']     = $name_array[$i];
             $uploadedFiles['files'][$i]['fileTmpName']  = $tmp_name_array[$i];
             $uploadedFiles['files'][$i]['fileType']     = $type_array[$i];

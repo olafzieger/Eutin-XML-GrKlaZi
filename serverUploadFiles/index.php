@@ -183,6 +183,10 @@ switch(substr($displayMaxSize,-1))
                  * */
                 $('#error').html('').removeClass();
 
+                /* TODO: erlaubte Dateitypen für InDesign mitels ('Dateityp: ' + selectedfiles[f].type)
+                 * abfragen und in der #filesList als glyphicon-alert als nicht erlaubt markieren.
+                 * */
+
                 var selectedFileList = '';
                 var fileListSize = 0;
                 var selectedfiles = $('#files')[0].files;
