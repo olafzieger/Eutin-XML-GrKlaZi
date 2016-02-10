@@ -60,6 +60,11 @@ if(isset($_FILES['files'])) {
 
     for($i = 0; $i < count($tmp_name_array); $i++){
 
+        /* TODO: Parameter für den Dateinamen aus URL abfragen z.B.:
+         * dev.runze-casper.de/xmlbildereutin/index.php?nummer=2.5
+         * Und wenn dann in $uploadedFiles['files'][$i]['fileName']
+         * für das Response in das UI übergeben.
+         * */
         if(move_uploaded_file($tmp_name_array[$i], $target_path . $name_array[$i])){
             /* Bei einem erfolgreichem Speicher/Verschieben wird
              * es an dieser Stelle im Arry $uploadedFiles notiert.

@@ -6,7 +6,6 @@
 	<xsl:output method="xml" encoding="UTF-8" indent="no" />
 
 	<xsl:template match="Data">
-		<!-- TODO: Auto-generated template -->
 		<Data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xsi:noNamespaceSchemaLocation="PDFschema.xsd">
             <xsl:comment>
