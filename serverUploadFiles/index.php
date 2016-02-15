@@ -200,7 +200,8 @@ switch(substr($displayMaxSize,-1))
                                             +'</td>'
                                             +'<td>' +
                                                 '<span class="glyphicon glyphicon-file" aria-hidden="true"></span>' +
-                                                '&nbsp;' + selectedfiles[f].name
+                                                '&nbsp;' + selectedfiles[f].name + '<br>' +
+                                                'Dateityp: ' + selectedfiles[f].type
                                             +'</td>'
                                         +'</tr>';
 
