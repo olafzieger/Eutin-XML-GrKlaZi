@@ -97,6 +97,9 @@
 						</xsl:element>
 					</xsl:if>
 				</xsl:element>
+                <!-- TODO: Hier noch abfragen welches Bildformat verfühgbar ist
+                     abfragen durch "doc-available($hrefjpg)", in $hrefjpg wird der
+                     Dateipfad gehalten. Nach erweitern mit $hreftif, $hrefeps etc. -->
                 <xsl:element name="bild">
                     <xsl:variable name="hrefjpg">
                         <xsl:text>file:///Volumes/pdf_xml_bilder/Bild_</xsl:text>
@@ -109,6 +112,7 @@
                         </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
+                <!-- Ende Beispiel JPG -->
                 <xsl:element name="elf">
                     <xsl:if test="elf = 'Ja'">
                         <xsl:attribute name="href">

@@ -8,6 +8,14 @@ session_start();
 $displayMaxSize = ini_get('post_max_size');
 $displayMaxFileUploads = ini_get('max_file_uploads');
 
+/* Dateinamen (Programmnummer) aus der URL holen
+ * und für jQuery in einer Variable ablegen.
+ * * */
+$programmNummer = '';
+if(isset($_REQUEST['nummer'])) {
+    $programmNummer = $_REQUEST['nummer'];
+}
+
 /* Ersetzung durch eine übliche Einheitsangabe. */
 switch(substr($displayMaxSize,-1))
 {
@@ -169,6 +177,7 @@ switch(substr($displayMaxSize,-1))
     var uploadCallback = '';
     var progressRepeats = 0;
     var displayMaxFileUploads = <?=$displayMaxFileUploads;?>;
+    var programmNummer = <?=$programmNummer;?>;
 
     $(document).ready(function(){
 
@@ -183,8 +192,9 @@ switch(substr($displayMaxSize,-1))
                  * */
                 $('#error').html('').removeClass();
 
-                /* TODO: erlaubte Dateitypen für InDesign mitels ('Dateityp: ' + selectedfiles[f].type)
-                 * abfragen und in der #filesList als glyphicon-alert als nicht erlaubt markieren.
+                /* TODO: erlaubte Dateitypen für InDesign mitels ('Dateityp: ' + selectedfiles[f].type) */
+                /* abfragen und in der #filesList als glyphicon-alert als nicht erlaubt markieren,
+                 * und den Uploadbutton deaktivieren $('#submit').attr('disabled', true);
                  * */
 
                 var selectedFileList = '';
