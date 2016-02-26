@@ -15,6 +15,13 @@ $programmNummer = '';
 if(isset($_REQUEST['nummer'])) {
     $programmNummer = $_REQUEST['nummer'];
 }
+/* Dateityp (Suffix) aus der URL holen
+ * und für jQuery in einer Variable ablegen.
+ * * */
+$suffix = '';
+if(isset($_REQUEST['suffix'])) {
+    $suffix = $_REQUEST['suffix'];
+}
 
 /* Ersetzung durch eine übliche Einheitsangabe. */
 switch(substr($displayMaxSize,-1))
@@ -116,11 +123,21 @@ switch(substr($displayMaxSize,-1))
         <div class="col-xs-12 col-md-8">
 
             <h2>XML-Bilder-Upload</h2>
-            <p>Select one file to upload (Max total size <?=$displayMaxSize;?>).</p>
-            <p>
-                Bitte nur Maximal <?=$displayMaxFileUploads;?> Dateien auswählen. Um mehrere Dateien zu selektieren
-                halten Sie in OS&nbsp;X&nbsp;<kbd>cmd&nbsp;⌘</kbd> bzw. in Windows&nbsp;<kbd>Strg</kbd> beim auswählen gedrückt.
-            </p>
+            <!-- Hier sollte man Texte für Ein- oder Mehrfachauswahl ausgeben. -->
+            <?php if($suffix != ''): ?>
+                <p>Select one file to upload (Max total size <?=$displayMaxSize;?>).</p>
+                <p>
+                    Die Datei die Sie von Ihrem Rechner wählen sollte die gleiche Dateiendung bzw. das gleiche
+                    Dateiformat wie die Auswahl in dem PDF-Formular haben. Sie hatten sich für eine
+                    <b>Datei&nbsp;mit&nbsp;der&nbsp;Endung&nbsp;</b><kbd>.<?=$suffix;?></kbd> entschieden.
+                </p>
+            <?php else: ?>
+                <p>Select one or more files to upload (Max total size <?=$displayMaxSize;?>).</p>
+                <p>
+                    Bitte nur Maximal <?=$displayMaxFileUploads;?> Dateien auswählen. Um mehrere Dateien zu selektieren
+                    halten Sie in OS&nbsp;X&nbsp;<kbd>cmd&nbsp;⌘</kbd> bzw. in Windows&nbsp;<kbd>Strg</kbd> beim auswählen gedrückt.
+                </p>
+            <?php endif; ?>
             <form action="upload.php" method="POST" enctype="multipart/form-data" id="upload" class="form-horizontal">
                 <input type="hidden" name="<?php echo ini_get("session.upload_progress.name"); ?>" value="upload" />
 
@@ -150,6 +167,9 @@ switch(substr($displayMaxSize,-1))
                     </div>
                 </div>
 
+                <input type="hidden" name="nummer" value="<?=$programmNummer;?>" />
+                <input type="hidden" name="suffix" value="<?=$suffix;?>" />
+
             </form>
 
             <div id="error" role="alert"></div>
@@ -177,7 +197,9 @@ switch(substr($displayMaxSize,-1))
     var uploadCallback = '';
     var progressRepeats = 0;
     var displayMaxFileUploads = <?=$displayMaxFileUploads;?>;
-    var programmNummer = <?=$programmNummer;?>;
+    var programmNummer = "<?=$programmNummer;?>";
+    var suffix = "<?=$suffix;?>";
+    var mimeType ='';
 
     $(document).ready(function(){
 
@@ -190,20 +212,68 @@ switch(substr($displayMaxSize,-1))
                  * Fehlermeldung wieder leeren. Und eine Liste der Auswahl
                  * ausgeben.
                  * */
-                $('#error').html('').removeClass();
 
-                /* TODO: erlaubte Dateitypen für InDesign mitels ('Dateityp: ' + selectedfiles[f].type) */
-                /* abfragen und in der #filesList als glyphicon-alert als nicht erlaubt markieren,
+                /* Erlaubte Dateitypen für InDesign mitels ('Dateityp: ' + selectedfiles[f].type)
+                 * abfragen und in der #filesList als glyphicon-alert als nicht erlaubt markieren,
                  * und den Uploadbutton deaktivieren $('#submit').attr('disabled', true);
+                 * dev.runze-casper.de/xmlbildereutin/index.php?nummer=2.5&suffix=eps
                  * */
+                switch (suffix) {
+                    case 'tif':
+                    case 'tiff':
+                        mimeType = 'image/tiff';
+                        break;
+                    case 'jpg':
+                    case 'jpeg':
+                        mimeType = 'image/jpeg';
+                        break;
+                    case 'eps':
+                    case 'ai':
+                        mimeType = 'application/postscript';
+                        break;
+                    default :
+                        mimeType = 'Nicht erlaubter Dateityp';
+                }
+
+                $('#error').html('').removeClass();
 
                 var selectedFileList = '';
                 var fileListSize = 0;
                 var selectedfiles = $('#files')[0].files;
+
                 for(var f = 0; f < selectedfiles.length; f++) {
+                    var selectedSuffix = selectedfiles[f].name.slice((Math.max(0, selectedfiles[f].name.lastIndexOf(".")) || Infinity) + 1).toLowerCase();
+                    var msgDateiTyp = '<h4><span class="glyphicon glyphicon-alert"></span> Folgender Fehler ist aufgetreten: </h4> ' +
+                                      'Sie versuchen eine Datei mit der Endung <b>.' + selectedSuffix + '</b> hochzuladen. ' +
+                                      'Sie hatten sich aber in dem PDF-Formular für eine Datei mit der Endung <b>.' + suffix + '</b> ' +
+                                      'entschieden. Bitte korrigieren Sie Ihre Auswahl um den Uploadvorgang fortzusetzen.';
+                    /* Aus der Variable msgDateiTyp für den Tooltip das html entfernen
+                     * *************************************************************** */
+                    var msgDateiTypForToolTip = msgDateiTyp.replace(/<(\D+?|\D\d|\/\D\d)>/g, '');
+                    var infoIcon = '<span class="glyphicon glyphicon-alert text-danger" data-toggle="tooltip" title="'+msgDateiTypForToolTip+'"></span>';
+
+                    if(mimeType == 'application/postscript'){
+                        if(suffix != selectedSuffix) {
+                            $('#error').html(msgDateiTyp).removeClass().addClass('alert alert-danger');
+                            $('#progress-txt').html('').removeClass();
+                            /*$('#submit').attr('disabled', true);*/
+                        } else {
+                            infoIcon ='<span class="glyphicon glyphicon-cloud-upload text-info" aria-hidden="true"></span>';
+                            $('#submit').attr('disabled', false);
+                        }
+                    } else {
+                        if(mimeType != selectedfiles[f].type) {
+                            $('#error').html(msgDateiTyp).removeClass().addClass('alert alert-danger');
+                            $('#progress-txt').html('').removeClass();
+                            $('#submit').attr('disabled', true);
+                        } else {
+                            infoIcon ='<span class="glyphicon glyphicon-cloud-upload text-info" aria-hidden="true"></span>';
+                            $('#submit').attr('disabled', false);
+                        }
+                    }
                     selectedFileList    += '<tr id="' + f + '">'
                                             +'<td class="text-left status">' +
-                                                '<span class="glyphicon glyphicon-cloud-upload text-info" aria-hidden="true"></span>'
+                                                infoIcon
                                             +'</td>'
                                             +'<td class="text-right filesize">' +
                                                  extround((selectedfiles[f].size/1024/1024), 100) + '&nbsp;MB'
@@ -218,11 +288,14 @@ switch(substr($displayMaxSize,-1))
                     fileListSize += selectedfiles[f].size;
                 }
                 $('#fileslist').html(selectedFileList).parent().addClass('table-responsive');
-                $('#progress-txt').html('Die von Ihnen agewählten Dateien haben gesamt ' + extround((fileListSize/1024/1024), 100) + ' MB.' +
-                                        ' Klicken Sie auf Upload um den Prozess zu starten oder ändern Sie Ihre Auswahl.')
-                                  .removeClass().addClass('alert alert-info');
+                if($('#error').html() == ''){
+                    $('#progress-txt').html('Die von Ihnen agewählten Dateien haben gesamt ' + extround((fileListSize/1024/1024), 100) + ' MB.' +
+                                            ' Klicken Sie auf Upload um den Prozess zu starten oder ändern Sie Ihre Auswahl.')
+                                      .removeClass().addClass('alert alert-info');
+                }
             }
             progressRepeats = 0;
+            $('[data-toggle="tooltip"]').tooltip();
 
         });
 
@@ -249,6 +322,7 @@ switch(substr($displayMaxSize,-1))
             });
 
             function beforeSubmit() {
+
                 /* Prüfen ob Daten vom Benutzer ausgewählt worden sind. */
                 if ($('#files').val() == '') {
                     $('#error').html('<span class="glyphicon glyphicon-alert"></span> Bitte wählen Sie Daten von Ihrem Rechner aus die hochgeladen werden sollen.')
@@ -262,7 +336,7 @@ switch(substr($displayMaxSize,-1))
             function uploadResponse(data) {
                 /* Response der upload.php (JSON) auswerten
                  * und prüfen ob alles hochgeladen wurde.
-                 * ggf. entsprechende Fehlermeldung ausgeben.  <span class="glyphicon glyphicon-info-sign text-danger" aria-hidden="true"></span>
+                 * ggf. entsprechende Fehlermeldung ausgeben.
                  * ****************************************** */
                 if(data && $('#error').html() == ''){
                     for(var i = 0; i < data.files.length; i++){
@@ -340,7 +414,7 @@ switch(substr($displayMaxSize,-1))
                             $('#progress').width('100%');
                             $('#progress').html('100%');
                             if($('table#fileslist tr').length > displayMaxFileUploads){
-                                /* 'Sie haben zu viele Dateien ausgewählt, es konnten leider nur die zulässigen ' + displayMaxFileUploads + ' Dateien hochgeladen werden.'; */
+                                /* Wenn zu viele Dateien ausgewählt wurden diesen Fehler ausgeben */
                                 $('#progress-txt').html('Sie haben zu viele Dateien ausgewählt, es' +
                                                         ' konnten leider nur die' +
                                                         ' zulässigen ' + displayMaxFileUploads + ' Dateien' +

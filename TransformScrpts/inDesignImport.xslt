@@ -7,7 +7,7 @@
 
 	<xsl:template match="Data">
 		<Data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:noNamespaceSchemaLocation="PDFschema.xsd">
+			xsi:noNamespaceSchemaLocation="">
             <xsl:comment>
                 <xsl:text>Leerer Eintrag für Musterseite</xsl:text>
             </xsl:comment>
@@ -97,22 +97,14 @@
 						</xsl:element>
 					</xsl:if>
 				</xsl:element>
-                <!-- TODO: Dateiformat aus dem Optionsfeld Dateityp holen
-                           und den Bildpfad generieren. -->
                 <xsl:element name="bild">
-                    <xsl:variable name="hrefjpg">
+                    <xsl:attribute name="href">
                         <xsl:text>file:///Volumes/pdf_xml_bilder/Bild_</xsl:text>
                         <xsl:value-of select="nummer"></xsl:value-of>
-                        <xsl:text>.xml</xsl:text>
-                    </xsl:variable>
-                    <xsl:if test="exists(document($hrefjpg))">
-                        <xsl:attribute name="href">
-                            <xsl:value-of select="$hrefjpg"></xsl:value-of>
-                        </xsl:attribute>
-                    </xsl:if>
+                        <xsl:text>.</xsl:text>
+                        <xsl:value-of select="Dateityp"></xsl:value-of>
+                    </xsl:attribute>
                 </xsl:element>
-                <!-- Ende Beispiel JPG -->
-
                 <xsl:element name="elf">
                     <xsl:if test="elf = 'Ja'">
                         <xsl:attribute name="href">
@@ -134,7 +126,7 @@
                         </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
-                <xsl:element name="forderschule">
+                <xsl:element name="foerderschule">
                     <xsl:if test="foerderschule = 'Ja'">
                         <xsl:attribute name="href">
                             <xsl:text>file:///Volumes/pdf_xml_bilder/Zielgruppe.psd</xsl:text>
